@@ -1,0 +1,10 @@
+[package]
+name = "cargo-ffi"
+version = "0.1.0"
+authors = ["Ryan Hunt <rhunt@eqrion.net>"]
+
+[dependencies]
+clap = "2.32"
+c-ffi = { path = "../c-ffi/" }
+emit-ffi = { path = "../emit-ffi/" }
+serde_json = "1.0"

@@ -1,0 +1,8 @@
+[package]
+name = "c-ffi"
+version = "0.1.0"
+authors = ["Ryan Hunt <rhunt@eqrion.net>"]
+
+[dependencies]
+c-ast = { path = "../c-ast/" }
+metadata-ffi = { path = "../metadata-ffi/" }

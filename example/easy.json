@@ -1,0 +1,34 @@
+{
+  "crate-name": "easy",
+  "items": [
+    {
+      "name": "easy::ForeignStruct",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "x",
+            "type": {
+              "kind": "f32"
+            }
+          },
+          {
+            "name": "y",
+            "type": {
+              "kind": "i32"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    }
+  ],
+  "functions": [],
+  "invalid_functions": []
+}

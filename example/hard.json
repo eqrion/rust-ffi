@@ -1,0 +1,264 @@
+{
+  "crate-name": "hard",
+  "items": [
+    {
+      "name": "easy::ForeignStruct",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "x",
+            "type": {
+              "kind": "f32"
+            }
+          },
+          {
+            "name": "y",
+            "type": {
+              "kind": "i32"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "hard::Alias",
+      "node": {
+        "kind": "Alias",
+        "type": {
+          "kind": "Path",
+          "index": 5
+        }
+      }
+    },
+    {
+      "name": "hard::Enumeration",
+      "node": {
+        "kind": "Enum",
+        "variants": [
+          {
+            "name": "A",
+            "node": {
+              "kind": "Tuple",
+              "fields": [
+                {
+                  "kind": "i32"
+                }
+              ]
+            },
+            "discriminant": 0
+          },
+          {
+            "name": "B",
+            "node": {
+              "kind": "Tuple",
+              "fields": [
+                {
+                  "kind": "f32"
+                }
+              ]
+            },
+            "discriminant": 1
+          },
+          {
+            "name": "C",
+            "node": {
+              "kind": "Unit"
+            },
+            "discriminant": 2
+          },
+          {
+            "name": "D",
+            "node": {
+              "kind": "Struct",
+              "fields": [
+                {
+                  "name": "name",
+                  "type": {
+                    "kind": "i32"
+                  }
+                }
+              ]
+            },
+            "discriminant": 3
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "hard::FieldlessEnumeration",
+      "node": {
+        "kind": "Enum",
+        "variants": [
+          {
+            "name": "A",
+            "node": {
+              "kind": "Unit"
+            },
+            "discriminant": 0
+          },
+          {
+            "name": "B",
+            "node": {
+              "kind": "Unit"
+            },
+            "discriminant": 8
+          },
+          {
+            "name": "C",
+            "node": {
+              "kind": "Unit"
+            },
+            "discriminant": 9
+          },
+          {
+            "name": "D",
+            "node": {
+              "kind": "Unit"
+            },
+            "discriminant": 10
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "hard::GenericStruct",
+      "node": {
+        "kind": "Opaque",
+        "reason": "IsGeneric"
+      }
+    },
+    {
+      "name": "hard::NewType",
+      "node": {
+        "kind": "TupleStruct",
+        "fields": [
+          {
+            "kind": "f32"
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": true,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "hard::bar1::BadBar",
+      "node": {
+        "kind": "Opaque",
+        "reason": "NotReprC"
+      }
+    },
+    {
+      "name": "hard::bar1::Bar",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "x",
+            "type": {
+              "kind": "bool"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "hard::foo::Foo",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "x",
+            "type": {
+              "kind": "Pointer",
+              "referenced": {
+                "kind": "Path",
+                "index": 7
+              },
+              "mutability": "Const"
+            }
+          },
+          {
+            "name": "y",
+            "type": {
+              "kind": "Array",
+              "referenced": {
+                "kind": "f32"
+              },
+              "size": 2
+            }
+          },
+          {
+            "name": "z",
+            "type": {
+              "kind": "Path",
+              "index": 0
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "hard::foo::UnitStruct",
+      "node": {
+        "kind": "UnitStruct"
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "root",
+      "output": {
+        "kind": "void"
+      },
+      "inputs": [
+        {
+          "kind": "Path",
+          "index": 8
+        }
+      ],
+      "abi": "C"
+    }
+  ],
+  "invalid_functions": []
+}

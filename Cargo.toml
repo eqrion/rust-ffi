@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "components/c-ast",
+    "components/c-ffi",
+    "components/emit-ffi",
+    "components/metadata-ffi",
+    "components/cargo-ffi",
+]

@@ -1,0 +1,272 @@
+{
+  "crate-name": "medium",
+  "items": [
+    {
+      "name": "medium::A",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "ptr",
+            "type": {
+              "kind": "Pointer",
+              "referenced": {
+                "kind": "Path",
+                "index": 2
+              },
+              "mutability": "Const"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "medium::Alias",
+      "node": {
+        "kind": "Alias",
+        "type": {
+          "kind": "Path",
+          "index": 7
+        }
+      }
+    },
+    {
+      "name": "medium::B",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "ptr",
+            "type": {
+              "kind": "Pointer",
+              "referenced": {
+                "kind": "Path",
+                "index": 0
+              },
+              "mutability": "Const"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "medium::C",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "ptr",
+            "type": {
+              "kind": "Pointer",
+              "referenced": {
+                "kind": "Path",
+                "index": 3
+              },
+              "mutability": "Const"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "medium::D",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "ptr",
+            "type": {
+              "kind": "Pointer",
+              "referenced": {
+                "kind": "Path",
+                "index": 5
+              },
+              "mutability": "Const"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "medium::E",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "ptr",
+            "type": {
+              "kind": "Pointer",
+              "referenced": {
+                "kind": "Path",
+                "index": 6
+              },
+              "mutability": "Const"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "medium::F",
+      "node": {
+        "kind": "Struct",
+        "fields": [
+          {
+            "name": "ptr",
+            "type": {
+              "kind": "Pointer",
+              "referenced": {
+                "kind": "Path",
+                "index": 4
+              },
+              "mutability": "Const"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "medium::NewType",
+      "node": {
+        "kind": "TupleStruct",
+        "fields": [
+          {
+            "kind": "f32"
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "medium::Opaque",
+      "node": {
+        "kind": "Opaque",
+        "reason": "NotReprC"
+      }
+    },
+    {
+      "name": "medium::Options",
+      "node": {
+        "kind": "Enum",
+        "variants": [
+          {
+            "name": "A",
+            "node": {
+              "kind": "Unit"
+            },
+            "discriminant": 0
+          },
+          {
+            "name": "B",
+            "node": {
+              "kind": "Unit"
+            },
+            "discriminant": 1
+          },
+          {
+            "name": "C",
+            "node": {
+              "kind": "Unit"
+            },
+            "discriminant": 2
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    },
+    {
+      "name": "medium::Union",
+      "node": {
+        "kind": "Union",
+        "fields": [
+          {
+            "name": "a",
+            "type": {
+              "kind": "Path",
+              "index": 9
+            }
+          },
+          {
+            "name": "b",
+            "type": {
+              "kind": "f32"
+            }
+          }
+        ],
+        "repr": {
+          "discriminant": null,
+          "max_align": 0,
+          "min_pack": 0,
+          "transparent": false,
+          "simd": false
+        }
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "root",
+      "output": {
+        "kind": "Path",
+        "index": 7
+      },
+      "inputs": [],
+      "abi": "C"
+    }
+  ],
+  "invalid_functions": []
+}

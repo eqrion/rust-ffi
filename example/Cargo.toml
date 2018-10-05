@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "easy",
+    "medium",
+    "hard",
+]

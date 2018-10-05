@@ -1,0 +1,8 @@
+[package]
+name = "emit-ffi"
+version = "0.1.0"
+authors = ["Ryan Hunt <rhunt@eqrion.net>"]
+
+[dependencies]
+serde_json = "1.0"
+metadata-ffi = { path = "../metadata-ffi" }
