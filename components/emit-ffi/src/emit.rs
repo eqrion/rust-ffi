@@ -14,7 +14,7 @@ use rustc::session::config::{self, ErrorOutputType, Input};
 use rustc::session::Session;
 use rustc::ty::subst::Substs;
 use rustc::ty::{
-    AdtKind, Const, FnSig, Instance, ParamEnv, ReprOptions, Ty, TyCtxt, TyKind, TypeFlags,
+    AdtKind, LazyConst, Const, FnSig, Instance, ParamEnv, ReprOptions, Ty, TyCtxt, TyKind, TypeFlags,
     VariantDef, VariantDiscr,
 };
 use rustc_codegen_utils::codegen_backend::CodegenBackend;
@@ -99,10 +99,13 @@ impl<'a> CompilerCalls<'a> for Driver {
 }
 
 fn emit_ffi(state: &mut driver::CompileState) {
+    let tcx = state.tcx.unwrap();
+    let access_levels = tcx.privacy_access_levels(LOCAL_CRATE);
+
     let mut cx = GatherContext::new(
-        state.tcx.unwrap(),
+        tcx,
         IndexAllocator::new(),
-        Rc::clone(&state.analysis.unwrap().access_levels),
+        Rc::clone(&access_levels),
     );
 
     let mut visitor = Visitor::new(&mut cx);
@@ -239,15 +242,10 @@ impl IndexAllocator {
     }
 }
 
-fn evaluate_array_size<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>, value: &Const<'tcx>) -> usize {
-    assert!(match value.ty.sty {
-        TyKind::Uint(ast::UintTy::Usize) => true,
-        _ => false,
-    });
-
-    match value.val {
-        ConstValue::Unevaluated(def_id, subst) => {
-            let instance = Instance::new(def_id, subst);
+fn evaluate_array_size_lazy<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>, value: &LazyConst<'tcx>) -> usize {
+    match value {
+        LazyConst::Unevaluated(def_id, subst) => {
+            let instance = Instance::new(*def_id, subst);
             let env = ParamEnv::empty();
             let global_id = GlobalId {
                 instance,
@@ -259,10 +257,21 @@ fn evaluate_array_size<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>, value: &Const<'tcx
 
             // `const_eval` is guaranteed to not return `Unevaluated`, so this
             // should not infinitely recurse
-            evaluate_array_size(tcx, value)
+            evaluate_array_size(tcx, &value)
         }
-        ConstValue::Scalar(scalar) => scalar.to_usize(tcx).map(|x| x as usize).unwrap(),
-        ConstValue::ScalarPair(..) => {
+        LazyConst::Evaluated(value) => evaluate_array_size(tcx, value),
+    }
+}
+
+fn evaluate_array_size<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>, value: &Const<'tcx>) -> usize {
+    assert!(match value.ty.sty {
+        TyKind::Uint(ast::UintTy::Usize) => true,
+        _ => false,
+    });
+
+    match value.val {
+        ConstValue::Scalar(scalar) => scalar.to_usize(&tcx).map(|x| x as usize).unwrap(),
+        ConstValue::Slice(..) => {
             unreachable!();
         }
         ConstValue::ByRef(..) => {
@@ -288,8 +297,8 @@ fn evaluate_variant_discr<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>, def_id: DefId) 
     });
 
     match value.val {
-        ConstValue::Scalar(scalar) => scalar.to_isize(tcx).map(|x| x as isize).unwrap(),
-        ConstValue::Unevaluated(..) | ConstValue::ScalarPair(..) | ConstValue::ByRef(..) => {
+        ConstValue::Scalar(scalar) => scalar.to_isize(&tcx).map(|x| x as isize).unwrap(),
+        ConstValue::Slice(..) | ConstValue::ByRef(..) => {
             unreachable!();
         }
     }
@@ -426,7 +435,7 @@ impl<'a, 'tcx: 'a> Gather<'a, 'tcx> for Ty<'tcx> {
                 Ok(ffi::Type::FnPtr(sig))
             }
             TyKind::Array(ty, size) => {
-                let size = evaluate_array_size(cx.tcx, size);
+                let size = evaluate_array_size_lazy(cx.tcx, size);
                 let ty = ty.gather(cx)?;
                 Ok(ffi::Type::Array(ffi::Array::new(ty, size)))
             }
@@ -462,7 +471,7 @@ impl<'a, 'tcx: 'a> Gather<'a, 'tcx> for (&'a VariantDef, isize, &'tcx Substs<'tc
             tys.push(field_ty);
         }
 
-        let name = variant.name.to_string();
+        let name = variant.ident.name.to_string();
         let data = match variant.ctor_kind {
             CtorKind::Fn => ffi::VariantKind::Tuple(ffi::VariantTuple { fields: tys }),
             CtorKind::Fictive => {
@@ -577,7 +586,7 @@ impl<'a, 'tcx: 'a> Gather<'a, 'tcx> for DefId {
                 match def.adt_kind() {
                     AdtKind::Struct | AdtKind::Union => {
                         assert!(def.variants.len() == 1);
-                        let variant = &def.variants[0];
+                        let variant = &def.variants[0_usize.into()];
                         let last_discriminant = isize::max_value();
 
                         match (variant, last_discriminant, subst).gather(cx) {
@@ -716,7 +725,7 @@ impl<'a, 'tcx: 'a> ItemLikeVisitor<'a> for Visitor<'a, 'tcx> {
 
         match &item.node {
             ItemKind::Struct(_, _) | ItemKind::Enum(_, _) | ItemKind::Union(_, _) => {
-                let def_id = self.cx.tcx.hir.local_def_id(item.id);
+                let def_id = self.cx.tcx.hir().local_def_id(item.id);
 
                 let (ffi_index, ffi_item) = def_id.gather(self.cx);
 
@@ -724,14 +733,14 @@ impl<'a, 'tcx: 'a> ItemLikeVisitor<'a> for Visitor<'a, 'tcx> {
                 assert!(!duplicate);
             }
             ItemKind::Ty(_, _) => {
-                let def_id = self.cx.tcx.hir.local_def_id(item.id);
+                let def_id = self.cx.tcx.hir().local_def_id(item.id);
                 let (ffi_index, ffi_item) = gather_alias(def_id, self.cx);
 
                 let duplicate = self.local_items.insert(ffi_index, ffi_item).is_some();
                 assert!(!duplicate);
             }
             ItemKind::Fn(_, _, _, _) => {
-                let def_id = self.cx.tcx.hir.local_def_id(item.id);
+                let def_id = self.cx.tcx.hir().local_def_id(item.id);
                 let ty = self.cx.tcx.type_of(def_id);
                 let poly_sig = ty.fn_sig(self.cx.tcx);
                 let sig = poly_sig.skip_binder();
@@ -741,10 +750,10 @@ impl<'a, 'tcx: 'a> ItemLikeVisitor<'a> for Visitor<'a, 'tcx> {
                     Ok(ffi_signature) => {
                         if no_mangle {
                             self.functions
-                                .push(ffi::Function::new(item.name.to_string(), ffi_signature));
+                                .push(ffi::Function::new(item.ident.name.to_string(), ffi_signature));
                         } else {
                             self.invalid_functions.push(ffi::InvalidFunction::new(
-                                item.name.to_string(),
+                                item.ident.name.to_string(),
                                 ffi::Reason::NotNoMangle,
                             ));
                         }
@@ -753,7 +762,7 @@ impl<'a, 'tcx: 'a> ItemLikeVisitor<'a> for Visitor<'a, 'tcx> {
                         ffi::Reason::InvalidAbi { .. } => {}
                         _ => {
                             self.invalid_functions
-                                .push(ffi::InvalidFunction::new(item.name.to_string(), reason));
+                                .push(ffi::InvalidFunction::new(item.ident.name.to_string(), reason));
                         }
                     },
                 }
