@@ -68,6 +68,19 @@ In order to use `cargo ffi`, `cargo-ffi` must be in the current `$PATH`:
 export PATH='path/to/rust-ffi/target/debug/':$PATH
 ```
 
+### Example
+
+```bash
+cd ~/Projects/rust-ffi/
+cargo +nightly build
+
+cp -R ~/.rustup/toolchains/nightly-x86_64-apple-darwin/lib target/
+export PATH='$PWD/target/debug/':$PATH
+
+cd example/easy
+cargo +nightly ffi
+```
+
 ## Warning
 
 Do not use `cargo-ffi` in the `rust-ffi` directory or you will need to rebuild.
