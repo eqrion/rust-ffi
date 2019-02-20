@@ -39,7 +39,7 @@ The `emit-ffi` driver links to the `rustc` compiler internals and requires a nig
 
 The latest compiler confirmed to work is:
 ```
-rustc 1.30.0-nightly (0f063aef6 2018-09-03)
+rustc 1.34.0-nightly (4b1e39b7b 2019-02-05)
 ```
 
 You can install nightly `rustc` using `rustup`:
@@ -58,6 +58,7 @@ Additionally, `emit-ffi` requires libraries from the sysroot to be in the parent
 
 ```bash
 cp -R ~/.rustup/toolchains/nightly-x86_64-apple-darwin/lib target/
+set -gx DYLD_LIBRARY_PATH '~/.rustup/toolchains/nightly-x86_64-apple-darwin/lib'
 ```
 
 Be sure to re-run that command after deleting the target directory, such as after `cargo clean`.
